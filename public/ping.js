@@ -1,7 +1,7 @@
-let maxTime = 0;
-let requestsCount = 0;
+let roundTripTimes = [];
+let testInProgress = false;
 
-function sendPing() {
+function sendPing(index) {
     const clientTimeBeforeRequest = new Date().getTime();
 
     fetch('/ping', {
@@ -12,21 +12,26 @@ function sendPing() {
     .then(response => response.json())
     .then(data => {
         const clientTimeAfterRequest = new Date().getTime();
-        const roundTripTime = clientTimeAfterRequest - clientTimeBeforeRequest;
-        maxTime = Math.max(maxTime, roundTripTime);
-    })
-    .finally(() => {
-        requestsCount++;
-        if (requestsCount === 50) {
-            alert("Longest round-trip time: " + maxTime + " ms");
-        }
+        roundTripTimes[index] = clientTimeAfterRequest - clientTimeBeforeRequest;
     });
 }
 
 function startSendingPings() {
+    roundTripTimes = new Array(50).fill(-1);
+    testInProgress = true;
+    document.getElementById("testStatus").textContent = "Test in progress...";
+
     for (let i = 0; i < 50; i++) {
-        setTimeout(sendPing, Math.random() * 10000); // Schedule ping within 10 seconds
+        setTimeout(() => sendPing(i), Math.random() * 10000); // Schedule ping within 10 seconds
     }
+
+    setTimeout(finishTest, 20000); // Allow an extra 10 seconds for server response
+}
+
+function finishTest() {
+    testInProgress = false;
+    const maxTime = Math.max(...roundTripTimes);
+    document.getElementById("testStatus").textContent = "Test completed. Longest round-trip time: " + maxTime + " ms";
 }
 
 // Call this function to start the process
