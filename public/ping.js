@@ -1,10 +1,12 @@
-let roundTripTimes = new Array(3600).fill(-1);
+let roundTripTimes = [];
 let testInProgress = false;
-const penaltyTime = 2000; // 2000 ms penalty for lost/delayed packets
-const totalDuration = 60000; // 60 seconds
-const intervalDuration = totalDuration / roundTripTimes.length; // Time between packets
+let testCount = 0;
+const maxTests = 60;
+const testDuration = 10000; // 10 seconds
+const packetsPerSecond = 20;
+const totalPackets = testDuration / 1000 * packetsPerSecond; // Total packets in one burst
 
-function sendPing(index) {
+function sendPing() {
     const clientTimeBeforeRequest = new Date().getTime();
 
     fetch('/ping?rand=' + Math.random(), {
@@ -15,32 +17,30 @@ function sendPing(index) {
     .then(response => response.json())
     .then(data => {
         const clientTimeAfterRequest = new Date().getTime();
-        roundTripTimes[index] = clientTimeAfterRequest - clientTimeBeforeRequest;
-    })
-    .catch(() => {
-        roundTripTimes[index] = penaltyTime; // Apply penalty if request fails or times out
+        roundTripTimes.push(clientTimeAfterRequest - clientTimeBeforeRequest);
     });
 }
 
-function startSendingPings() {
-    roundTripTimes.fill(-1);
-    testInProgress = true;
-    document.getElementById("testStatus").textContent = "Test in progress...";
-
-    for (let i = 0; i < roundTripTimes.length; i++) {
-        setTimeout(() => sendPing(i), i * intervalDuration);
+function startTestBurst() {
+    roundTripTimes = [];
+    for (let i = 0; i < totalPackets; i++) {
+        setTimeout(sendPing, i * (1000 / packetsPerSecond));
     }
 
-    setTimeout(finishTest, totalDuration + 10000); // Extra time to account for responses
+    setTimeout(endTestBurst, testDuration);
 }
 
-function finishTest() {
-    testInProgress = false;
+function endTestBurst() {
     const maxTime = Math.max(...roundTripTimes);
     const startTime = new Date().toLocaleTimeString();
-
     updateResultsTable(startTime, maxTime);
-    document.getElementById("testStatus").textContent = "Ready for next ping";
+    testCount++;
+
+    if (testCount < maxTests) {
+        setTimeout(startTestBurst, 1000); // Wait for 1 second before starting the next burst
+    } else {
+        document.getElementById("testStatus").textContent = "Test completed.";
+    }
 }
 
 function updateResultsTable(startTime, maxPing) {
