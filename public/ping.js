@@ -6,7 +6,7 @@ const testDuration = 10000; // 10 seconds
 const packetsPerSecond = 20;
 const totalPackets = testDuration / 1000 * packetsPerSecond; // Total packets in one burst
 
-function sendPing() {
+function sendPing(index) {
     const clientTimeBeforeRequest = new Date().getTime();
 
     fetch('/ping?rand=' + Math.random(), {
@@ -17,18 +17,46 @@ function sendPing() {
     .then(response => response.json())
     .then(data => {
         const clientTimeAfterRequest = new Date().getTime();
-        roundTripTimes.push(clientTimeAfterRequest - clientTimeBeforeRequest);
+        roundTripTimes[index] = clientTimeAfterRequest - clientTimeBeforeRequest;
     });
 }
 
 function startTestBurst() {
+    if (testInProgress) {
+        return; // Prevent starting a new test if one is already in progress
+    }
+
+    testInProgress = true;
+    document.getElementById("startButton").textContent = "Test Running";
+    
     roundTripTimes = [];
     for (let i = 0; i < totalPackets; i++) {
         setTimeout(sendPing, i * (1000 / packetsPerSecond));
     }
 
     setTimeout(endTestBurst, testDuration);
+
+    testCount = 0;
+    runTestLoop();
 }
+
+function runTestLoop() {
+    if (testCount < maxTests) {
+        roundTripTimes = [];
+        for (let i = 0; i < totalPackets; i++) {
+            setTimeout(() => sendPing(i), i * (1000 / packetsPerSecond));
+        }
+
+        // Wait for the current burst to finish before starting the next one
+        setTimeout(() => {
+            testCount++;
+            runTestLoop();
+        }, testDuration + 1000); // 1 second buffer after testDuration
+    } else {
+        endTestBurst();
+    }
+}
+
 
 function endTestBurst() {
     const maxTime = Math.max(...roundTripTimes);
@@ -47,7 +75,9 @@ function updateResultsTable(startTime, maxPing) {
     const table = document.getElementById("resultsTable");
     const row = table.insertRow(-1); // Insert a new row at the end
     row.insertCell(0).textContent = startTime;
-    row.insertCell(1).textContent = maxPing + " ms";
+    const pingCell = row.insertCell(1);
+    pingCell.textContent = maxPing + " ms";
+    pingCell.className = "right-align"; // Apply the class to the cell
 }
 
 function finishTest() {
