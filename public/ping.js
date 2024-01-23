@@ -3,7 +3,7 @@ let testInProgress = false;
 let testCount = 0;
 const maxTests = 60;
 const testDuration = 10000; // 10 seconds
-const packetsPerSecond = 20;
+const packetsPerSecond = 10;
 const totalPackets = testDuration / 1000 * packetsPerSecond; // Total packets in one burst
 
 function sendPing(index) {
