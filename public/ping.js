@@ -1,7 +1,7 @@
 let roundTripTimes = [];
 let pingTestInProgress = false;
 let pingTestCount = 0;
-const maxPingTests = 60;
+const maxPingTests = 15;
 const pingTestDuration = 10000; // 10 seconds
 const packetsPerSecond = 10;
 const totalPackets = pingTestDuration / 1000 * packetsPerSecond; // Total packets in one burst
