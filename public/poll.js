@@ -1,7 +1,7 @@
 let roundTripTimesPoll = [];
 let pollTestInProgress = false;
 let pollTestCount = 0;
-const maxPollTests = 60;
+const maxPollTests = 15;
 const pollTestDuration = 10000; // 10 seconds
 const pollsPerSecond = 10;
 const totalPolls = pollTestDuration / 1000 * pollsPerSecond; // Total polls in one burst
