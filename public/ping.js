@@ -53,9 +53,8 @@ function updateResultsTable(startTime, maxPing) {
 function finishTest() {
     const maxTime = Math.max(...roundTripTimes);
     const startTime = new Date().toLocaleTimeString();
-    const clientIP = "TBD"; // Placeholder for client IP. You need to determine how to fetch it.
 
-    updateResultsTable(startTime, clientIP, maxTime);
+    updateResultsTable(startTime, maxTime);
 
     document.getElementById("testStatus").textContent = "Ready for next ping";
 }
