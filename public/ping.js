@@ -88,7 +88,3 @@ function finishTest() {
 
     document.getElementById("testStatus").textContent = "Ready for next ping";
 }
-
-
-// Call this function to start the process
-startSendingPings();
