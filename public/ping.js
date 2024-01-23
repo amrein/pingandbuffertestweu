@@ -27,49 +27,45 @@ function startTestBurst() {
     }
 
     testInProgress = true;
-    document.getElementById("startButton").textContent = "Test Running";
-    
-    roundTripTimes = [];
-    for (let i = 0; i < totalPackets; i++) {
-        setTimeout(sendPing, i * (1000 / packetsPerSecond));
-    }
-
-    setTimeout(endTestBurst, testDuration);
+    let startButton = document.getElementById("startButton");
+    startButton.textContent = "Test Running";
+    startButton.style.backgroundColor = "grey"; // Grey out the button
+    startButton.disabled = true; // Disable the button
 
     testCount = 0;
     runTestLoop();
 }
 
 function runTestLoop() {
-    if (testCount < maxTests) {
-        roundTripTimes = [];
-        for (let i = 0; i < totalPackets; i++) {
-            setTimeout(() => sendPing(i), i * (1000 / packetsPerSecond));
-        }
-
-        // Wait for the current burst to finish before starting the next one
-        setTimeout(() => {
-            testCount++;
-            runTestLoop();
-        }, testDuration + 1000); // 1 second buffer after testDuration
-    } else {
-        endTestBurst();
+    roundTripTimes = [];
+    for (let i = 0; i < totalPackets; i++) {
+        setTimeout(() => sendPing(i), i * (1000 / packetsPerSecond));
     }
-}
 
+    // Wait for the current burst to finish, then handle the results
+    setTimeout(() => {
+        endTestBurst(); // Moved this line from the else block
+    }, testDuration + 1000); // 1 second buffer after testDuration
+}
 
 function endTestBurst() {
-    const maxTime = Math.max(...roundTripTimes);
+    const maxTime = Math.max(...roundTripTimes.filter(time => time >= 0));
     const startTime = new Date().toLocaleTimeString();
     updateResultsTable(startTime, maxTime);
-    testCount++;
 
+    testCount++;
     if (testCount < maxTests) {
-        setTimeout(startTestBurst, 1000); // Wait for 1 second before starting the next burst
+        setTimeout(runTestLoop, 1000);
     } else {
+        let startButton = document.getElementById("startButton");
+        startButton.textContent = "Start";
+        startButton.style.backgroundColor = ""; // Reset button color
+        startButton.disabled = false; // Re-enable the button
         document.getElementById("testStatus").textContent = "Test completed.";
+        testInProgress = false;
     }
 }
+
 
 function updateResultsTable(startTime, maxPing) {
     const table = document.getElementById("resultsTable");
