@@ -13,23 +13,19 @@
 </head>
 <body>
     <h1>Ping Test</h1>
-    <!-- <button onclick="sendPing()">Send Ping</button>  -->
-    <br>
-    <button id="startButton" onclick="startTestBurst()">Start</button>
-    <br>
-    <script src="ping.js"></script> <!-- Make sure this points to your JavaScript file -->
-    <div id="testStatus">Waiting to start the test...</div>
-    <br>
-    <br>
-    <table id="resultsTable">
-        <tr>
-            <th>Start Time</th>
-            <th>Max Ping Time (ms)</th>
-        </tr>
-        <!-- Results will be appended here -->
+    <div id="pingTestStatus">Waiting to start the ping test...</div>
+    <button id="pingStartButton" onclick="startPingTest()">Start Ping Test</button>
+
+    <table id="pingResultsTable">
+    <tr>
+        <th>Max Ping (ms)</th>
+        <th>Min Ping (ms)</th>
+        <th>Average Ping (ms)</th>
+        <th>Median Ping (ms)</th>
+        <th>Standard Deviation (ms)</th>
+    </tr>
+    <!-- Results will be appended here -->
     </table>
-
-
     
 </body>
 </html>
