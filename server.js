@@ -5,6 +5,16 @@ const path = require('path');
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.post('/poll', (req, res) => {
+    // Set headers to prevent caching
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    res.set('Expires', '-1');
+    res.set('Pragma', 'no-cache');
+    
+    // Send a response
+    res.json({ message: "Poll response", serverTime: new Date().toISOString() });
+});
+
 app.post('/ping', (req, res) => {
     // Set headers to prevent caching
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
