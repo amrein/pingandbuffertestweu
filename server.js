@@ -21,8 +21,20 @@ app.post('/ping', (req, res) => {
 
     console.log(`Client IP: ${clientIP}, Time Difference: ${timeDifference}ms`);
 
-    res.json({ serverTime: new Date(serverTime).toISOString() });
+    const randomData = generateRandomData(128); // Generate 128 bytes of of random data
+    res.json({ serverTime: new Date().toISOString(), data: randomData });
 });
+
+function generateRandomData(size) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let data = new Array(size);
+    for (let i = 0; i < size; i++) {
+        data[i] = characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return data.join('');
+}
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
