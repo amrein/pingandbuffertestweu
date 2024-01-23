@@ -3,12 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Ping Test</title>
+    
+    <style>
+    .right-align {
+        text-align: right;
+    }
+    </style>
+
 </head>
 <body>
     <h1>Ping Test</h1>
     <!-- <button onclick="sendPing()">Send Ping</button>  -->
     <br>
-    <button onclick="startSendingPings()">Start Ping Test</button>
+    <button id="startButton" onclick="startTestBurst()">Start</button>
     <br>
     <script src="ping.js"></script> <!-- Make sure this points to your JavaScript file -->
     <div id="testStatus">Waiting to start the test...</div>
