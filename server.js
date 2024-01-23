@@ -31,7 +31,7 @@ app.post('/ping', (req, res) => {
 
     console.log(`Client IP: ${clientIP}, Time Difference: ${timeDifference}ms`);
 
-    const randomData = generateRandomData(1024); // Generate 1 KB of of random data
+    const randomData = generateRandomData(102400); // Generate 1 KB of of random data
     res.json({ serverTime: new Date().toISOString(), data: randomData });
 });
 
