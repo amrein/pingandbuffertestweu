@@ -1,32 +1,33 @@
-async function sendPing() {
-    try {
-        const clientTimeBeforeRequest = new Date();
-        const clientTimeBeforeRequestUTC = clientTimeBeforeRequest.toISOString();
+let maxTime = 0;
+let requestsCount = 0;
 
-        const response = await fetch('/ping', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ clientTime: clientTimeBeforeRequestUTC }),
-        });
+function sendPing() {
+    const clientTimeBeforeRequest = new Date().getTime();
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+    fetch('/ping', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ clientTime: clientTimeBeforeRequest })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const clientTimeAfterRequest = new Date().getTime();
+        const roundTripTime = clientTimeAfterRequest - clientTimeBeforeRequest;
+        maxTime = Math.max(maxTime, roundTripTime);
+    })
+    .finally(() => {
+        requestsCount++;
+        if (requestsCount === 50) {
+            alert("Longest round-trip time: " + maxTime + " ms");
         }
+    });
+}
 
-        const data = await response.json();
-        const clientTimeAfterRequest = new Date();
-        const serverTime = new Date(data.serverTime);
-
-        const timeLag = clientTimeAfterRequest - serverTime;
-
-        alert("Timestamp (Client): " + clientTimeBeforeRequestUTC + 
-              "\nTimestamp (Server): " + data.serverTime +
-              "\nTime Lag (Client-Server): " + timeLag + "ms");
-    } catch (error) {
-        console.error("Error sending ping:", error);
+function startSendingPings() {
+    for (let i = 0; i < 50; i++) {
+        setTimeout(sendPing, Math.random() * 10000); // Schedule ping within 10 seconds
     }
 }
 
-sendPing();
+// Call this function to start the process
+startSendingPings();
