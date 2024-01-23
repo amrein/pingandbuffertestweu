@@ -9,5 +9,6 @@
   "author": "SENN with ChatGPT4",
   "license": "ISC",
   "dependencies": {
+     "express": "^4.17.1"
   }
 }
